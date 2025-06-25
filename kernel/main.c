@@ -1,8 +1,8 @@
-#include "screen.h"
+#include "terminal.h"
 
 void main() {
-    clear_screen();
+    terminal_init();
 
-    print("42 booted successfully");
+    terminal_print("42 booted\nsuccessfully");
 }
 
