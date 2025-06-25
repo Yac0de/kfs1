@@ -1,3 +1,5 @@
+// kernel/terminal.c
+
 #include "terminal.h"
 #include "screen.h"
 
@@ -12,6 +14,33 @@ static void update_cursor() {
     set_cursor(cursor_row, cursor_col);
 }
 
+// Scroll the screen up by one line if needed
+static void scroll_if_needed() {
+    if (cursor_row < MAX_ROWS)
+        return;
+
+    // Move all lines up
+    for (int row = 1; row < MAX_ROWS; row++) {
+        for (int col = 0; col < MAX_COLS; col++) {
+            // Read char from below
+            int from_offset = (row * MAX_COLS + col) * 2;
+            int to_offset = ((row - 1) * MAX_COLS + col) * 2;
+
+            char* video_memory = (char*)0xB8000;
+            video_memory[to_offset] = video_memory[from_offset];
+            video_memory[to_offset + 1] = video_memory[from_offset + 1];
+        }
+    }
+
+    // Clear last line
+    for (int col = 0; col < MAX_COLS; col++) {
+        put_char_at(' ', MAX_ROWS - 1, col);
+    }
+
+    // Adjust cursor
+    cursor_row = MAX_ROWS - 1;
+}
+
 // Clear terminal and reset cursor
 void terminal_init(void) {
     clear_screen();
@@ -20,7 +49,7 @@ void terminal_init(void) {
     update_cursor();
 }
 
-// Print string, support for '\n'
+// Print string with \n and scrolling
 void terminal_print(const char* str) {
     for (int i = 0; str[i] != '\0'; i++) {
         char c = str[i];
@@ -37,11 +66,7 @@ void terminal_print(const char* str) {
             }
         }
 
-        if (cursor_row >= MAX_ROWS) {
-            // No scroll yet — stop here
-            break;
-        }
-
+        scroll_if_needed();
         update_cursor();
     }
 }

@@ -7,9 +7,6 @@ void put_char_at(char c, int row, int col);
 // Write character at current cursor position and advance cursor
 void put_char(char c);
 
-// Print a null-terminated string
-void print(const char* str);
-
 // Clear screen
 void clear_screen(void);
 
