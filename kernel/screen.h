@@ -1,14 +1,23 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-// Write a character at (row, col) with a fixed attribute
+// Write character at specific position
 void put_char_at(char c, int row, int col);
 
-// Clear the entire screen
+// Write character at current cursor position and advance cursor
+void put_char(char c);
+
+// Print a null-terminated string
+void print(const char* str);
+
+// Clear screen
 void clear_screen(void);
 
-// Print a null-terminated string starting from the top-left corner
-void print(const char* str);
+// Move hardware cursor to given row and column
+void set_cursor(int row, int col);
+
+// Get current hardware cursor position (offset in video memory)
+int get_cursor(void);
 
 #endif
 

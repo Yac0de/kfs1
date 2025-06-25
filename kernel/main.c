@@ -3,6 +3,6 @@
 void main() {
     clear_screen();
 
-    print("42");
+    print("42 booted successfully");
 }
 
