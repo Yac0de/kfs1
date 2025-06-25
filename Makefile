@@ -12,13 +12,13 @@ NASMFLAGS = -f elf32
 # GRUB configuration path
 GRUB_CFG = iso/boot/grub/grub.cfg
 
-# Source files
-SRC_C = $(wildcard kernel/*.c)
-SRC_ASM = $(wildcard boot/*.asm)
+# Source files (explicit, no wildcard)
+SRC_C = kernel/main.c kernel/screen.c
+SRC_ASM = boot/boot.asm
 
-# Object files
-OBJ_C = $(SRC_C:kernel/%.c=$(BUILD)/kernel/%.o)
-OBJ_ASM = $(SRC_ASM:boot/%.asm=$(BUILD)/boot/%.o)
+# Object files (mapped manually)
+OBJ_C = $(BUILD)/kernel/main.o $(BUILD)/kernel/screen.o
+OBJ_ASM = $(BUILD)/boot/boot.o
 
 # Default target
 all: $(ISO)
