@@ -1,57 +1,64 @@
-# Output binary names
-TARGET = kernel.bin
-ISO = kernel.iso
-BUILD = build
+# ========= Colors ===========
+RED     = \033[0;31m
+GREEN   = \033[0;32m
+YELLOW  = \033[1;33m
+NC      = \033[0m
 
-# Compilers and flags
-CC = gcc
-CFLAGS = -m32 -ffreestanding -fno-pic -fno-builtin -fno-stack-protector -nostdlib
-NASM = nasm
+# ========= Output ===========
+TARGET     = kernel.bin
+ISO        = kernel.iso
+BUILD      = build
+GRUB_CFG   = iso/boot/grub/grub.cfg
+
+# ========= Sources ==========
+SRC_C_FILES  = main screen terminal utils printf
+SRC_C        = $(addprefix kernel/, $(addsuffix .c, $(SRC_C_FILES)))
+OBJ_C        = $(SRC_C:kernel/%.c=$(BUILD)/kernel/%.o)
+
+SRC_ASM      = boot/boot.asm
+OBJ_ASM      = $(SRC_ASM:boot/%.asm=$(BUILD)/boot/%.o)
+
+# ========= Tools ============
+CC        = gcc
+CFLAGS    = -m32 -ffreestanding -fno-pic -fno-builtin -fno-stack-protector -nostdlib
+NASM      = nasm
 NASMFLAGS = -f elf32
 
-# GRUB configuration path
-GRUB_CFG = iso/boot/grub/grub.cfg
-
-# Source files (explicit, no wildcard)
-SRC_C = kernel/main.c kernel/screen.c kernel/terminal.c kernel/utils.c kernel/printf.c
-SRC_ASM = boot/boot.asm
-
-# Object files (mapped manually)
-OBJ_C = $(BUILD)/kernel/main.o $(BUILD)/kernel/screen.o $(BUILD)/kernel/terminal.o $(BUILD)/kernel/utils.o $(BUILD)/kernel/printf.o
-OBJ_ASM = $(BUILD)/boot/boot.o
-
-# Default target
+# ========= Default ==========
 all: $(ISO)
 
-# Compile C files
+# ========= Compilation Rules ==========
 $(BUILD)/kernel/%.o: kernel/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) -c $< -o $@
+	@echo "$(YELLOW)Compiling $<$(NC)"
+	@$(CC) $(CFLAGS) -c $< -o $@
 
-# Compile ASM files
 $(BUILD)/boot/%.o: boot/%.asm
 	@mkdir -p $(dir $@)
-	$(NASM) $(NASMFLAGS) $< -o $@
+	@echo "$(YELLOW)Assembling $<$(NC)"
+	@$(NASM) $(NASMFLAGS) $< -o $@
 
-# Link the final kernel binary
+# ========= Linking ==========
 $(TARGET): $(OBJ_C) $(OBJ_ASM)
-	$(CC) -m32 -nostdlib -T linker.ld -o $@ $^
+	@echo "$(GREEN)Linking kernel -> $@$(NC)"
+	@$(CC) -m32 -nostdlib -T linker.ld -o $@ $^
 
-# Create ISO image with GRUB
+# ========= ISO Creation ==========
 $(ISO): $(TARGET) $(GRUB_CFG)
-	mkdir -p iso/boot
-	cp $< iso/boot/kernel.bin
-	grub-mkrescue -o $@ iso
+	@mkdir -p iso/boot
+	@cp $< iso/boot/kernel.bin
+	@echo "$(GREEN)Creating bootable ISO -> $@$(NC)"
+	@grub-mkrescue -o $@ iso
 
-# Clean build artifacts
+# ========= Cleaning Rules ==========
 clean:
-	rm -rf $(BUILD) $(TARGET) $(ISO)
+	@echo "$(RED)Cleaning build files$(NC)"
+	@rm -rf $(BUILD) $(TARGET) $(ISO)
 
-# Full clean including copied kernel
 fclean: clean
-	rm -f iso/boot/kernel.bin
+	@echo "$(RED)Cleaning ISO kernel copy$(NC)"
+	@rm -f iso/boot/kernel.bin
 
-# Rebuild everything from scratch
 re: fclean all
 
 .PHONY: all clean fclean re
