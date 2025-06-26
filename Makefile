@@ -13,11 +13,11 @@ NASMFLAGS = -f elf32
 GRUB_CFG = iso/boot/grub/grub.cfg
 
 # Source files (explicit, no wildcard)
-SRC_C = kernel/main.c kernel/screen.c kernel/terminal.c kernel/utils.c
+SRC_C = kernel/main.c kernel/screen.c kernel/terminal.c kernel/utils.c kernel/printf.c
 SRC_ASM = boot/boot.asm
 
 # Object files (mapped manually)
-OBJ_C = $(BUILD)/kernel/main.o $(BUILD)/kernel/screen.o $(BUILD)/kernel/terminal.o $(BUILD)/kernel/utils.o
+OBJ_C = $(BUILD)/kernel/main.o $(BUILD)/kernel/screen.o $(BUILD)/kernel/terminal.o $(BUILD)/kernel/utils.o $(BUILD)/kernel/printf.o
 OBJ_ASM = $(BUILD)/boot/boot.o
 
 # Default target

@@ -1,13 +1,13 @@
 #include "terminal.h"
+#include "printf.h"
 
 void main() {
     terminal_init();
 
-    terminal_print("Char-by-char:\n");
-
-    const char* msg = "KFS1 is fun\n";
-    for (int i = 0; msg[i] != '\0'; i++) {
-        terminal_putchar(msg[i]);
-    }
+    printf("Booting KFS1...\n");
+    printf("Integer: %d\n", -42);
+    printf("Hex: %x\n", 3735928559); // 0xDEADBEEF
+    printf("Char: %c\n", '!');
+    printf("String: %s\n", "done");
 }
 
