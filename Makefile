@@ -20,7 +20,7 @@ OBJ_ASM      = $(SRC_ASM:boot/%.asm=$(BUILD)/boot/%.o)
 
 # ========= Tools ============
 CC        = gcc
-CFLAGS    = -m32 -ffreestanding -fno-pic -fno-builtin -fno-stack-protector -nostdlib
+CFLAGS = -m32 -ffreestanding -fno-pic -fno-builtin -fno-stack-protector -nostdlib -nodefaultlibs
 NASM      = nasm
 NASMFLAGS = -f elf32
 
