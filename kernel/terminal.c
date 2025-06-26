@@ -8,10 +8,12 @@
 static int cursor_row = 0;
 static int cursor_col = 0;
 
+// Internal helper to update hardware cursor to match logical position
 static void update_cursor() {
     set_cursor(cursor_row, cursor_col);
 }
 
+// Scroll the screen up by one line if the cursor exceeds MAX_ROWS
 static void scroll_if_needed(char attribute) {
     if (cursor_row < MAX_ROWS)
         return;
@@ -33,6 +35,7 @@ static void scroll_if_needed(char attribute) {
     cursor_row = MAX_ROWS - 1;
 }
 
+// Clear screen and reset cursor
 void terminal_init(void) {
     clear_screen();
     cursor_row = 0;
@@ -40,29 +43,38 @@ void terminal_init(void) {
     update_cursor();
 }
 
+// Print full string with default color
+void terminal_print(const char* str) {
+    terminal_print_color(str, DEFAULT_COLOR);
+}
+
+// Print full string with custom color
 void terminal_print_color(const char* str, char attribute) {
     for (int i = 0; str[i] != '\0'; i++) {
-        char c = str[i];
-
-        if (c == '\n') {
-            cursor_row++;
-            cursor_col = 0;
-        } else {
-            put_char_at(c, cursor_row, cursor_col, attribute);
-            cursor_col++;
-            if (cursor_col >= MAX_COLS) {
-                cursor_col = 0;
-                cursor_row++;
-            }
-        }
-
-        scroll_if_needed(attribute);
-        update_cursor();
+        terminal_putchar_color(str[i], attribute);
     }
 }
 
-// Default version (white on black)
-void terminal_print(const char* str) {
-    terminal_print_color(str, DEFAULT_COLOR);
+// Print a single character with custom color
+void terminal_putchar_color(char c, char attribute) {
+    if (c == '\n') {
+        cursor_row++;
+        cursor_col = 0;
+    } else {
+        put_char_at(c, cursor_row, cursor_col, attribute);
+        cursor_col++;
+        if (cursor_col >= MAX_COLS) {
+            cursor_col = 0;
+            cursor_row++;
+        }
+    }
+
+    scroll_if_needed(attribute);
+    update_cursor();
+}
+
+// Print a single character with default color
+void terminal_putchar(char c) {
+    terminal_putchar_color(c, DEFAULT_COLOR);
 }
 
