@@ -28,7 +28,6 @@ void clear_screen(void) {
             put_char_at(' ', row, col, DEFAULT_COLOR);
         }
     }
-    set_cursor(0, 0);
 }
 
 void set_cursor(int row, int col) {
