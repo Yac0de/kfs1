@@ -8,16 +8,17 @@
 static int cursor_row = 0;
 static int cursor_col = 0;
 
-// Internal helper to update hardware cursor to match logical position
+// Update hardware cursor to match internal position
 static void update_cursor() {
     set_cursor(cursor_row, cursor_col);
 }
 
-// Scroll the screen up by one line if the cursor exceeds MAX_ROWS
+// Scroll the screen up by one line if cursor goes beyond the last row
 static void scroll_if_needed(char attribute) {
     if (cursor_row < MAX_ROWS)
         return;
 
+    // Move each row one line up
     for (int row = 1; row < MAX_ROWS; row++) {
         for (int col = 0; col < MAX_COLS; col++) {
             char* video_memory = (char*)0xB8000;
@@ -28,6 +29,7 @@ static void scroll_if_needed(char attribute) {
         }
     }
 
+    // Clear the last line
     for (int col = 0; col < MAX_COLS; col++) {
         put_char_at(' ', MAX_ROWS - 1, col, attribute);
     }
@@ -35,7 +37,6 @@ static void scroll_if_needed(char attribute) {
     cursor_row = MAX_ROWS - 1;
 }
 
-// Clear screen and reset cursor
 void terminal_init(void) {
     clear_screen();
     cursor_row = 0;
@@ -43,19 +44,16 @@ void terminal_init(void) {
     update_cursor();
 }
 
-// Print full string with default color
 void terminal_print(const char* str) {
     terminal_print_color(str, DEFAULT_COLOR);
 }
 
-// Print full string with custom color
 void terminal_print_color(const char* str, char attribute) {
     for (int i = 0; str[i] != '\0'; i++) {
         terminal_putchar_color(str[i], attribute);
     }
 }
 
-// Print a single character with custom color
 void terminal_putchar_color(char c, char attribute) {
     if (c == '\n') {
         cursor_row++;
@@ -63,6 +61,8 @@ void terminal_putchar_color(char c, char attribute) {
     } else {
         put_char_at(c, cursor_row, cursor_col, attribute);
         cursor_col++;
+
+        // Wrap to next line if needed
         if (cursor_col >= MAX_COLS) {
             cursor_col = 0;
             cursor_row++;
@@ -73,8 +73,6 @@ void terminal_putchar_color(char c, char attribute) {
     update_cursor();
 }
 
-// Print a single character with default color
 void terminal_putchar(char c) {
     terminal_putchar_color(c, DEFAULT_COLOR);
 }
-

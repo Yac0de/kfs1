@@ -22,15 +22,25 @@
 // Combine foreground and background into a VGA attribute byte
 #define COLOR(fg, bg) ((bg << 4) | (fg))
 
-// Write character at specific position with color
+/**
+ * @brief Write a character at a specific screen location with color.
+ * @param c Character to display
+ * @param row Row number (0 to MAX_ROWS-1)
+ * @param col Column number (0 to MAX_COLS-1)
+ * @param attribute VGA attribute byte (foreground + background color)
+ */
 void put_char_at(char c, int row, int col, char attribute);
 
-// Clear screen (default color)
+/**
+ * @brief Clears the entire screen using default color and spaces.
+ */
 void clear_screen(void);
 
-// Move hardware cursor
+/**
+ * @brief Move the hardware VGA cursor to a specific location.
+ * @param row Target row (0 to MAX_ROWS-1)
+ * @param col Target column (0 to MAX_COLS-1)
+ */
 void set_cursor(int row, int col);
-int get_cursor(void);
 
 #endif
-

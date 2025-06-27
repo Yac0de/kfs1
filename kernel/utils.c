@@ -16,7 +16,7 @@ void itoa(int value, char* str) {
 }
 
 void utoa(unsigned int value, char* str) {
-    char buffer[16];
+    char buffer[16];    // Temporary buffer to store digits in reverse order
     int i = 0;
 
     if (value == 0) {
@@ -25,12 +25,13 @@ void utoa(unsigned int value, char* str) {
         return;
     }
 
+    // Extract digits in reverse
     while (value > 0) {
         buffer[i++] = '0' + (value % 10);
         value /= 10;
     }
 
-    // Reverse
+    // Reverse digits into final string
     for (int j = 0; j < i; j++) {
         str[j] = buffer[i - j - 1];
     }
@@ -38,7 +39,7 @@ void utoa(unsigned int value, char* str) {
 }
 
 void xtoa(unsigned int value, char* str, int prefix) {
-    char buffer[16];
+    char buffer[16];    // Temporary buffer to store hex digits in reverse order
     int i = 0;
 
     if (value == 0) {
@@ -54,6 +55,7 @@ void xtoa(unsigned int value, char* str, int prefix) {
         return;
     }
 
+    // Convert to hex string (reversed)
     while (value > 0) {
         int digit = value % 16;
         buffer[i++] = digit < 10 ? '0' + digit : 'A' + (digit - 10);
@@ -67,6 +69,7 @@ void xtoa(unsigned int value, char* str, int prefix) {
         offset = 2;
     }
 
+    // Reverse into final string
     for (int j = 0; j < i; j++) {
         str[offset + j] = buffer[i - j - 1];
     }
