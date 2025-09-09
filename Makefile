@@ -20,9 +20,18 @@ OBJ_ASM      = $(SRC_ASM:boot/%.asm=$(BUILD)/boot/%.o)
 
 # ========= Tools ============
 CC        = gcc
-CFLAGS = -m32 -ffreestanding -fno-pic -fno-builtin -fno-stack-protector -nostdlib -nodefaultlibs
+CFLAGS    = -m32 -ffreestanding -fno-pic -fno-builtin -fno-stack-protector -nostdlib -nodefaultlibs
 NASM      = nasm
 NASMFLAGS = -f elf32
+
+GRUB_MODULES = iso9660 multiboot \
+			   normal part_acorn part_amiga part_apple \
+			   part_bsd part_dfly part_dvh part_gpt part_msdos \
+			   part_plan part_sun part_sunpc
+GRUB_EXCLUDED_FILES = boot/grub/x86_64-efi \
+					  boot/grub/locale \
+					  System mach_kernel \
+					  efi efi.img
 
 # ========= Default ==========
 all: $(ISO)
@@ -48,7 +57,16 @@ $(ISO): $(TARGET) $(GRUB_CFG)
 	@mkdir -p iso/boot
 	@cp $< iso/boot/kernel.bin
 	@echo "$(GREEN)Creating bootable ISO -> $@$(NC)"
-	@grub-mkrescue -o $@ iso
+	grub-mkrescue \
+		--themes="" \
+		--install-modules "$(GRUB_MODULES)" \
+		-o $@ iso -- \
+		-rm_r $(GRUB_EXCLUDED_FILES)
+
+# ========= Run ==========
+run: $(ISO)
+	@echo "$(GREEN)Launching QEMU with $<$(NC)"
+	qemu-system-i386 -cdrom $<
 
 # ========= Cleaning Rules ==========
 clean:
@@ -61,5 +79,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re
-
+.PHONY: all clean fclean re run
